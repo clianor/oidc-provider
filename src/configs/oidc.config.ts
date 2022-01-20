@@ -2,19 +2,51 @@ import { Configuration } from 'oidc-provider';
 import OidcAuth from '../oidc/oidc.auth';
 import RedisAdapter from '../oidc/redis.adapter';
 
+/**
+ * OAuth 2.0 클라이언트 인증 방법 ( https://ichi.pro/ko/oauth-2-0-keullaieonteu-injeung-82873853085140 )
+ * client_secret_basic: 토큰 요청에 클라이언트 ID와 클라이언트 암호를 포함하는 또 다른 방법은 기본 인증 ( RFC 7617 )을 사용하는 것
+ * client_secret_jwt: 토큰 요청에 클라이언트 암호를 직접 포함하지 않고 클라이언트 응용 프로그램에 클라이언트 암호가 있음을 간접적으로 증명하는 방법
+ * client_secret_post: 전통적인 방식으로 시작하려면 권한 부여 서버가 클라이언트 ID 와 클라이언트 시크릿 쌍을 생성 하고이 쌍을 미리 클라이언트 애플리케이션에 제공
+ */
+
 const oidcConfig: Configuration = {
+  adapter: RedisAdapter,
   clients: [
     {
       client_id: 'foo',
-      redirect_uris: ['https://jwt.io'],
+      redirect_uris: ['https://jwt.io'], // using jwt.io as redirect_uri to show the ID Token contents
       response_types: ['id_token'],
       grant_types: ['implicit'],
       token_endpoint_auth_method: 'none',
     },
+    {
+      client_id: 'bar',
+      client_secret: '123',
+      application_type: 'web',
+      id_token_signed_response_alg: 'ES256',
+      redirect_uris: ['https://jwt.io'],
+      response_types: ['code'],
+      grant_types: ['client_credentials', 'authorization_code', 'refresh_token'],
+      token_endpoint_auth_method: 'client_secret_jwt',
+      // token_endpoint_auth_method: 'client_secret_post',
+      scope: 'openid email offline_access',
+    },
+    {
+      client_id: 'test',
+      client_secret: 'test',
+      application_type: 'web',
+      id_token_signed_response_alg: 'ES256',
+      redirect_uris: ['http://localhost:3000'],
+      response_types: ['code'],
+      grant_types: ['refresh_token', 'authorization_code'],
+      post_logout_redirect_uris: ['http://localhost:3000'],
+      scope: 'openid',
+      token_endpoint_auth_method: 'client_secret_basic',
+    },
   ],
-  adapter: RedisAdapter,
+  scopes: ['openid', 'email', 'offline_access'],
   cookies: {
-    keys: [], // 쿠키 변조 방지에 사용되는 키 조합
+    keys: ['some secret key', 'old key', 'and one more'],
   },
   jwks: {
     keys: [
@@ -74,18 +106,25 @@ const oidcConfig: Configuration = {
       return `/oidc/interaction/${interaction.uid}`;
     },
   },
+
+  // 추가적인 부가 기능들
   features: {
     // disable the packaged interactions
     devInteractions: { enabled: false },
+    clientCredentials: { enabled: true },
   },
-
+  pkce: {
+    methods: ['S256', 'plain'],
+    required: () => false,
+  },
   renderError: async function renderError(ctx, out, error) {
     console.log('error', error);
     ctx.type = 'html';
     ctx.body = `<!DOCTYPE html>
     <head>
       <title>oops! something went wrong</title>
-      <style>/* css and html classes omitted for brevity, see lib/helpers/defaults.js */</style>
+      <style>/* css and html classes omitted for
+       brevity, see lib/helpers/defaults.js */</style>
     </head>
     <body>
       <div>

@@ -19,7 +19,12 @@ async function bootstrap() {
   console.log(`👉 http://localhost:${port} 👈`);
   console.log(`✅ check its http://localhost:${port}/oidc/.well-known/openid-configuration ✅`);
   console.log(
-    `test: http://localhost:3000/oidc/auth?client_id=foo&response_type=id_token&redirect_uri=https%3A%2F%2Fjwt.io&scope=openid%20email&nonce=foobar&prompt=login`,
+    `test: http://localhost:3000/oidc/auth?client_id=foo&response_type=id_token&redirect_uri=https%3A%2F%2Fjwt.io&scope=openid%20email&nonce=foobar`,
+  );
+
+  console.log(
+    `bar test: http://localhost:3000/oidc/auth?client_id=bar&response_type=code&redirect_uri=https%3A%2F%2Fjwt.io&scope=openid%20email&nonce=foobar&code_challenge=elU6u5zyqQT2f92GRQUq6PautAeNDf4DQPayyR0ek_c&
+code_challenge_method=S256`,
   );
 }
 bootstrap();

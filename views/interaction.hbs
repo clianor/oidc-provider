@@ -108,6 +108,63 @@
   </style>
 </head>
 <body>
-{{ message }}
+  <div class="login-card">
+    <h1>{{title}}</h1>
+    <div class="login-client-image">
+      {{#if client.logoUri}} <img src="{{client.logoUri}}"> {{/if}}
+    </div>
+
+    {{#unless details.missingOIDCScope}}
+      {{#unless details.missingOIDCClaims}}
+        {{#unless details.missingResourceScopes}}
+          <li>the client is asking you to confirm previously given authorization</li>
+        {{/unless}}
+      {{/unless}}
+    {{/unless}}
+
+    <ul>
+      {{#if details.missingOIDCScope}}
+        <li>scopes:</li>
+        <ul>
+          {{#each details.missingOIDCScope}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      {{/if}}
+
+<!--      {{#if details.missingOIDCClaims}}-->
+<!--        <li>claims:</li>-->
+<!--        <ul>-->
+<!--          {{#each details.missingOIDCClaims}}-->
+<!--            <li>{{this}}</li>-->
+<!--          {{/each}}-->
+<!--        </ul>-->
+<!--      {{/if}}-->
+
+<!--      {{#if details.missingResourceScopes}}-->
+<!--        {{#each details.missingResourceScopes}}-->
+<!--          <li>{{@key}}:</li>-->
+<!--          <ul>-->
+<!--            {{#each this}}-->
+<!--              <li>{{this}}</li>-->
+<!--            {{/each}}-->
+<!--          </ul>-->
+<!--        {{/each}}-->
+<!--      {{/if}}-->
+    </ul>
+
+    <form autocomplete="off" action="/oidc/interaction/{{uid}}/confirm" method="post">
+      <button autofocus type="submit" class="login login-submit">Continue</button>
+    </form>
+    <div class="login-help">
+      <a href="/oidc/interaction/{{uid}}/abort">[ Cancel ]</a>
+      {{#if client.tosUri}}
+        <a href="{{client.tosUri}}">[ Terms of Service ]</a>
+      {{/if}}
+      {{#if client.policyUri}}
+        <a href="{{client.policyUri}}">[ Privacy Policy ]</a>
+      {{/if}}
+    </div>
+  </div>
 </body>
 </html>

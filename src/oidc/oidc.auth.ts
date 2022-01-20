@@ -11,7 +11,7 @@ const db = {
     {
       id: 'c2ac2b4a-2262-4e2f-847a-a40dd3c4dcd5',
       email: 'bar@example.com',
-      email_verified: false,
+      email_verified: true,
       password: 'bar',
     },
   ],
@@ -19,15 +19,17 @@ const db = {
 
 class OidcAuth {
   static async findAccount(ctx, id): Promise<Account | undefined> {
-    const account = db['users'].find((user) => user.email === id);
+    console.log('findAccount', ctx, id);
+    const account = db['users'].find((user) => user.id === id);
+    console.log('findAccount account', account);
     if (!account) {
       return undefined;
     }
 
     return {
       accountId: id,
-      async claims(use, scope) {
-        console.log('claims: ', use, '|', scope);
+      // and this claims() method would actually query to retrieve the account claims
+      async claims() {
         return {
           sub: id,
           email: account.email,
@@ -42,6 +44,7 @@ class OidcAuth {
     try {
       const lowercased = String(email).toLowerCase();
       const account = db['users'].find((user) => user.email === lowercased);
+      console.log('authenticate account', account);
       if (account.password !== password) {
         return undefined;
       }

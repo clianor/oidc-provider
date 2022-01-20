@@ -15,13 +15,12 @@ export class OidcController {
 
     try {
       const details = await oidc.interactionDetails(req, res);
-      const { uid, prompt, params, returnTo } = details;
+      const { uid, prompt, params } = details;
 
       const client = await oidc.Client.find((params as any).client_id);
 
       if (prompt.name === 'login') {
         return res.render('login', {
-          returnTo,
           client,
           uid,
           details: prompt.details,
@@ -31,8 +30,14 @@ export class OidcController {
         });
       }
 
+      console.log('interaction render props', {
+        client,
+        uid,
+        details: prompt.details,
+        params,
+        title: 'Authorize',
+      });
       return res.render('interaction', {
-        returnTo,
         client,
         uid,
         details: prompt.details,
@@ -55,6 +60,7 @@ export class OidcController {
       const client = await oidc.Client.find((params as any).client_id);
 
       const accountId = await OidcAuth.authenticate(req.body.email, req.body.password);
+      console.log('accountId', accountId);
 
       if (!accountId) {
         res.render('login', {
