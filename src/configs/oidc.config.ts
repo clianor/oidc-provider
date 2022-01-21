@@ -13,35 +13,14 @@ const oidcConfig: Configuration = {
   adapter: RedisAdapter,
   clients: [
     {
-      client_id: 'foo',
-      redirect_uris: ['https://jwt.io'], // using jwt.io as redirect_uri to show the ID Token contents
-      response_types: ['id_token'],
-      grant_types: ['implicit'],
-      token_endpoint_auth_method: 'none',
-    },
-    {
-      client_id: 'bar',
-      client_secret: '123',
-      application_type: 'web',
-      id_token_signed_response_alg: 'ES256',
-      redirect_uris: ['https://jwt.io'],
-      response_types: ['code'],
-      grant_types: ['client_credentials', 'authorization_code', 'refresh_token'],
-      token_endpoint_auth_method: 'client_secret_jwt',
-      // token_endpoint_auth_method: 'client_secret_post',
-      scope: 'openid email offline_access',
-    },
-    {
       client_id: 'test',
       client_secret: 'test',
       application_type: 'web',
-      id_token_signed_response_alg: 'ES256',
-      redirect_uris: ['http://localhost:3000'],
       response_types: ['code'],
       grant_types: ['refresh_token', 'authorization_code'],
-      post_logout_redirect_uris: ['http://localhost:3000'],
-      scope: 'openid',
-      token_endpoint_auth_method: 'client_secret_basic',
+      redirect_uris: ['https://jwt.io'],
+      id_token_signed_response_alg: 'ES256',
+      scope: 'openid email offline_access',
     },
   ],
   scopes: ['openid', 'email', 'offline_access'],
@@ -111,7 +90,24 @@ const oidcConfig: Configuration = {
   features: {
     // disable the packaged interactions
     devInteractions: { enabled: false },
-    clientCredentials: { enabled: true },
+    encryption: { enabled: true },
+    // 토큰 검증기능 on/off
+    introspection: {
+      enabled: true,
+    },
+    // 동적 Client 생성 기능 ( client.js에 등록된 client이외에 추가로 동적으로 등록이 가능하도록 )
+    registration: {
+      enabled: true,
+      // 허가되지 않은 사용자의 client 등록을 차단하기위한 secret key.
+      initialAccessToken: 'initial_secret',
+    },
+    // client 등록에 사용되는 인증 절차에 관한 설정
+    registrationManagement: {
+      enabled: true,
+      rotateRegistrationAccessToken: false,
+    },
+    // 발급한 토큰을 폐지하는 기능 on/off
+    revocation: { enabled: true },
   },
   pkce: {
     methods: ['S256', 'plain'],

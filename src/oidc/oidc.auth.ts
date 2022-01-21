@@ -19,9 +19,7 @@ const db = {
 
 class OidcAuth {
   static async findAccount(ctx, id): Promise<Account | undefined> {
-    console.log('findAccount', ctx, id);
     const account = db['users'].find((user) => user.id === id);
-    console.log('findAccount account', account);
     if (!account) {
       return undefined;
     }
@@ -40,11 +38,9 @@ class OidcAuth {
   }
 
   static async authenticate(email, password) {
-    console.log('authenticate: ', email, password);
     try {
       const lowercased = String(email).toLowerCase();
       const account = db['users'].find((user) => user.email === lowercased);
-      console.log('authenticate account', account);
       if (account.password !== password) {
         return undefined;
       }

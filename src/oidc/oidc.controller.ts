@@ -30,13 +30,6 @@ export class OidcController {
         });
       }
 
-      console.log('interaction render props', {
-        client,
-        uid,
-        details: prompt.details,
-        params,
-        title: 'Authorize',
-      });
       return res.render('interaction', {
         client,
         uid,
@@ -60,7 +53,6 @@ export class OidcController {
       const client = await oidc.Client.find((params as any).client_id);
 
       const accountId = await OidcAuth.authenticate(req.body.email, req.body.password);
-      console.log('accountId', accountId);
 
       if (!accountId) {
         res.render('login', {

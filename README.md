@@ -22,3 +22,12 @@ http://localhost:3000/auth?client_id=foo&response_type=id_token&redirect_uri=htt
 http://localhost:3000/oidc/auth?client_id=bar&response_type=code&redirect_uri=https%3A%2F%2Fjwt.io&scope=openid%20email&nonce=foobar&code_challenge=elU6u5zyqQT2f92GRQUq6PautAeNDf4DQPayyR0ek_c&
 code_challenge_method=S256
 ```
+
+```shell
+$ docker run -it --rm -d -p 6379:6379 redis
+$ docker run -it --rm -d -p 8081:8081 rediscommander/redis-commander
+
+# or
+
+$ docker-compose up -d
+```
