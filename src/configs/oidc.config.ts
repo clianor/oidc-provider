@@ -12,13 +12,14 @@ import RedisAdapter from '../oidc/redis.adapter';
 const oidcConfig: Configuration = {
   adapter: RedisAdapter,
   clients: [
+    // authorization code
     {
       client_id: 'test',
       client_secret: 'test',
       application_type: 'web',
       response_types: ['code'],
       grant_types: ['refresh_token', 'authorization_code'],
-      redirect_uris: ['https://jwt.io'],
+      redirect_uris: ['http://localhost:3000', 'https://jwt.io'],
       id_token_signed_response_alg: 'ES256',
       scope: 'openid email offline_access',
     },
@@ -95,19 +96,26 @@ const oidcConfig: Configuration = {
     introspection: {
       enabled: true,
     },
-    // 동적 Client 생성 기능 ( client.js에 등록된 client이외에 추가로 동적으로 등록이 가능하도록 )
-    registration: {
-      enabled: true,
-      // 허가되지 않은 사용자의 client 등록을 차단하기위한 secret key.
-      initialAccessToken: 'initial_secret',
-    },
-    // client 등록에 사용되는 인증 절차에 관한 설정
-    registrationManagement: {
-      enabled: true,
-      rotateRegistrationAccessToken: false,
-    },
+    // // 동적 Client 생성 기능 ( client.js에 등록된 client이외에 추가로 동적으로 등록이 가능하도록 )
+    // registration: {
+    //   enabled: true,
+    //   // 허가되지 않은 사용자의 client 등록을 차단하기위한 secret key.
+    //   initialAccessToken: true,
+    // },
+    // // client 등록에 사용되는 인증 절차에 관한 설정
+    // registrationManagement: {
+    //   enabled: true,
+    //   rotateRegistrationAccessToken: false,
+    // },
     // 발급한 토큰을 폐지하는 기능 on/off
     revocation: { enabled: true },
+  },
+  ttl: {
+    AccessToken: 1 * 60 * 60, // 1 hour in seconds
+    AuthorizationCode: 10 * 60, // 10 minutes in seconds
+    IdToken: 1 * 60 * 60, // 1 hour in seconds
+    DeviceCode: 10 * 60, // 10 minutes in seconds
+    RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
   },
   pkce: {
     methods: ['S256', 'plain'],
